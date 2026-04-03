@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="text-align: center; margin-top: 50px;">
+    <h1 style="font-size: 3em;">Check Your Resume,<br><span style="color: #e89b2b;">Get More Interviews</span></h1>
+    <p style="font-size: 1.2em; color: #ccc;">Upload your resume and find out why you're not getting called back.</p>
+    
+    <div style="margin-top: 30px;">
+        <a href="{{ url_for('register') }}" style="background-color: #e89b2b; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-size: 1.1em; margin-right: 15px;">Get Started - It's Free</a>
+        <a href="{{ url_for('login') }}" style="background-color: white; color: #28303f; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-size: 1.1em; font-weight: bold;">Sign In</a>
+    </div>
+</div>
+{% endblock %}

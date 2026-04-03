@@ -1,0 +1,15 @@
+# Python & Flask
+__pycache__/
+venv/
+env/
+*.pyc
+.env
+
+# Database (Never push your local database to GitHub!)
+instance/
+*.db
+database.db
+
+# VS Code & OS files
+.vscode/
+.DS_Store
