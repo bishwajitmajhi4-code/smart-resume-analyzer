@@ -134,6 +134,25 @@ def upload_resume():
     else:
         flash('Invalid file type. Only PDF is allowed.', 'danger')
         return redirect(url_for('dashboard'))
+@app.route('/report/<int:id>')
+@login_required
+def view_report(id):
+    # 1. Database se specific resume fetch karo
+    resume = Resume.query.get_or_404(id)
+
+    # Security Check: Koi dusra user kisi aur ka resume na dekh paye
+    if resume.user_id != current_user.id:
+        flash('Unauthorized access!', 'danger')
+        return redirect(url_for('dashboard'))
+
+    # 2. Database mein skills ek lamba text (comma separated) tha, usko list mein convert kar rahe hain
+    detected_list = resume.detected_skills.split(', ') if resume.detected_skills else []
+
+    # 3. Dummy "Missing Skills" calculation (Jisko Student 4 aage chal kar advance karega)
+    master_skills = ["python", "java", "sql", "html", "css", "javascript", "machine learning", "git", "cybersecurity"]
+    missing_list = [skill for skill in master_skills if skill not in detected_list]
+
+    return render_template('results.html', resume=resume, detected_skills=detected_list, missing_skills=missing_list)
 
 if __name__ == '__main__':
     app.run(debug=True)
