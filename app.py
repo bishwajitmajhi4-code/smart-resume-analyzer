@@ -85,7 +85,10 @@ def login():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html', name=current_user.name)
+    # Database se current user ke saare uploaded resumes fetch karo (latest pehle)
+    user_resumes = Resume.query.filter_by(user_id=current_user.id).order_by(Resume.date_uploaded.desc()).all()
+    
+    return render_template('dashboard.html', name=current_user.name, resumes=user_resumes)
 
 @app.route('/logout')
 @login_required

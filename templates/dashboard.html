@@ -17,4 +17,36 @@
         </form>
     </div>
 </div>
+<div style="margin-top: 40px; background-color: #1e2430; padding: 30px; border-radius: 8px;">
+        <h3 style="margin-bottom: 20px; color: white;">Your Upload History</h3>
+        
+        <table style="width: 100%; text-align: left; border-collapse: collapse; color: #ccc;">
+            <thead>
+                <tr style="border-bottom: 1px solid #444;">
+                    <th style="padding: 10px;">Date Uploaded</th>
+                    <th style="padding: 10px;">AI Match Score</th>
+                    <th style="padding: 10px;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for resume in resumes %}
+                <tr style="border-bottom: 1px solid #333;">
+                    <td style="padding: 10px;">{{ resume.date_uploaded.strftime('%Y-%m-%d %H:%M') }}</td>
+                    
+                    <td style="padding: 10px; color: {% if resume.score > 0 %}#4CAF50{% else %}#e89b2b{% endif %}; font-weight: bold;">
+                        {% if resume.score > 0 %}{{ resume.score }}%{% else %}AI Analysis Pending...{% endif %}
+                    </td>
+                    
+                    <td style="padding: 10px;">
+                        <button style="background: none; color: #4CAF50; border: 1px solid #4CAF50; padding: 5px 10px; border-radius: 4px; cursor: pointer;">View Report</button>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" style="padding: 20px; text-align: center; color: #888;">You haven't uploaded any resumes yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
