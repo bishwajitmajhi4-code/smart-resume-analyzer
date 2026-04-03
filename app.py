@@ -2,8 +2,10 @@ import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.utils import secure_filename # <-- YEH NAYA HAI
-from models import db, User, Resume # <-- Yahan Resume model ko bhi import kiya
+from werkzeug.utils import secure_filename
+from models import db, User, Resume
+from core.resume_parser import extract_text_from_pdf
+from core.skill_matcher import analyze_resume_text
 
 app = Flask(__name__)
 
@@ -13,7 +15,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024 # Max 5 MB size limit
-ALLOWED_EXTENSIONS = {'pdf'} # Abhi ke liye sirf PDF allow kar rahe hain
+ALLOWED_EXTENSIONS = {'pdf'}
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -38,7 +40,7 @@ with app.app_context():
 
 @app.route('/')
 def index():
-    return render_template('index.html') # Front-end lead ka landing page yahan connect hoga
+    return render_template('index.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -47,13 +49,11 @@ def register():
         email = request.form.get('email')
         password = request.form.get('password')
 
-        # Check if user already exists
         user = User.query.filter_by(email=email).first()
         if user:
             flash('Email address already exists.', 'danger')
             return redirect(url_for('register'))
 
-        # Create new user with hashed password
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
         new_user = User(name=name, email=email, password=hashed_password)
 
@@ -73,7 +73,6 @@ def login():
 
         user = User.query.filter_by(email=email).first()
 
-        # Verify password
         if user and check_password_hash(user.password, password):
             login_user(user)
             return redirect(url_for('dashboard'))
@@ -85,9 +84,7 @@ def login():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    # Database se current user ke saare uploaded resumes fetch karo (latest pehle)
     user_resumes = Resume.query.filter_by(user_id=current_user.id).order_by(Resume.date_uploaded.desc()).all()
-    
     return render_template('dashboard.html', name=current_user.name, resumes=user_resumes)
 
 @app.route('/logout')
@@ -99,35 +96,40 @@ def logout():
 @app.route('/upload', methods=['POST'])
 @login_required
 def upload_resume():
-    # Check if the post request has the file part
     if 'resume_file' not in request.files:
         flash('No file part', 'danger')
         return redirect(url_for('dashboard'))
     
     file = request.files['resume_file']
     
-    # If user does not select file, browser also submit an empty part without filename
     if file.filename == '':
         flash('No selected file', 'danger')
         return redirect(url_for('dashboard'))
         
     if file and allowed_file(file.filename):
-        # Secure the filename (remove spaces, special chars)
         filename = secure_filename(file.filename)
         
-        # Ensure uploads folder exists
         if not os.path.exists(app.config['UPLOAD_FOLDER']):
             os.makedirs(app.config['UPLOAD_FOLDER'])
             
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(file_path)
         
-        # Save info to database
-        new_resume = Resume(user_id=current_user.id, score=0) # Score abhi 0 hai, AI baad me update karega
+        # ====== AI BRAIN INTEGRATION ======
+        extracted_text = extract_text_from_pdf(file_path)
+        score, detected_skills = analyze_resume_text(extracted_text)
+        # ==================================
+        
+        # Naya resume entry asli score aur skills ke sath save karo
+        new_resume = Resume(
+            user_id=current_user.id, 
+            score=score, 
+            detected_skills=detected_skills
+        )
         db.session.add(new_resume)
         db.session.commit()
         
-        flash('Resume successfully uploaded! AI Analysis pending...', 'success')
+        flash('Resume successfully uploaded and analyzed!', 'success')
         return redirect(url_for('dashboard'))
     else:
         flash('Invalid file type. Only PDF is allowed.', 'danger')
