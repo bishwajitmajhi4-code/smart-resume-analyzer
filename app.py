@@ -1,7 +1,9 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from models import db, User
+from werkzeug.utils import secure_filename # <-- YEH NAYA HAI
+from models import db, User, Resume # <-- Yahan Resume model ko bhi import kiya
 
 app = Flask(__name__)
 
@@ -9,6 +11,12 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'smart_resume_analyzer_secret_key_123'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024 # Max 5 MB size limit
+ALLOWED_EXTENSIONS = {'pdf'} # Abhi ke liye sirf PDF allow kar rahe hain
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Initialize DB
 db.init_app(app)
@@ -84,6 +92,43 @@ def dashboard():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+@app.route('/upload', methods=['POST'])
+@login_required
+def upload_resume():
+    # Check if the post request has the file part
+    if 'resume_file' not in request.files:
+        flash('No file part', 'danger')
+        return redirect(url_for('dashboard'))
+    
+    file = request.files['resume_file']
+    
+    # If user does not select file, browser also submit an empty part without filename
+    if file.filename == '':
+        flash('No selected file', 'danger')
+        return redirect(url_for('dashboard'))
+        
+    if file and allowed_file(file.filename):
+        # Secure the filename (remove spaces, special chars)
+        filename = secure_filename(file.filename)
+        
+        # Ensure uploads folder exists
+        if not os.path.exists(app.config['UPLOAD_FOLDER']):
+            os.makedirs(app.config['UPLOAD_FOLDER'])
+            
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(file_path)
+        
+        # Save info to database
+        new_resume = Resume(user_id=current_user.id, score=0) # Score abhi 0 hai, AI baad me update karega
+        db.session.add(new_resume)
+        db.session.commit()
+        
+        flash('Resume successfully uploaded! AI Analysis pending...', 'success')
+        return redirect(url_for('dashboard'))
+    else:
+        flash('Invalid file type. Only PDF is allowed.', 'danger')
+        return redirect(url_for('dashboard'))
 
 if __name__ == '__main__':
     app.run(debug=True)

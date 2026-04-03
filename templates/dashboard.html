@@ -9,10 +9,10 @@
         <h3 style="margin-bottom: 15px;">Upload Your Resume</h3>
         <p style="color: #888; margin-bottom: 20px;">PDF format supported (Max 5MB)</p>
         
-        <form action="#" method="POST" enctype="multipart/form-data">
-            <input type="file" name="resume_file" accept=".pdf" style="display: block; margin: 0 auto 20px auto; color: white;">
-            <button type="button" style="padding: 10px 25px; background-color: #444; color: #888; border: none; border-radius: 4px; cursor: not-allowed;" disabled>
-                Analyze Resume (Coming in Phase 3)
+        <form action="{{ url_for('upload_resume') }}" method="POST" enctype="multipart/form-data">
+            <input type="file" name="resume_file" accept=".pdf" required style="display: block; margin: 0 auto 20px auto; color: white;">
+            <button type="submit" style="padding: 10px 25px; background-color: #e89b2b; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                Upload & Analyze Resume
             </button>
         </form>
     </div>
