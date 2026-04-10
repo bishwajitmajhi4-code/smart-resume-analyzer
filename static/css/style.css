@@ -1,0 +1,142 @@
+/* --- Professional Dark Editorial Theme --- */
+:root {
+    --bg-dark: #0A1128;        /* Deep Navy Black */
+    --card-bg: #426295;       /* Lighter Slate */
+    --primary-gold: #e89b2b;   /* Your Brand Gold */
+    --text-main: #f8fafc;     /* Off White */
+    --text-muted: #94a3b8;    /* Muted Grey */
+    --success: #10b981;       /* Emerald Green */
+    --danger: #ef4444;        /* Rose Red */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    line-height: 1.6;
+}
+
+/* --- Navigation --- */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 10%;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    border-bottom: 1px solid #334155;
+    z-index: 100;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--primary-gold);
+    letter-spacing: -1px;
+}
+
+.nav-links a {
+    color: var(--text-main);
+    text-decoration: none;
+    margin-left: 2rem;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    color: var(--primary-gold);
+}
+
+/* --- Hero Section --- */
+.hero {
+    text-align: center;
+    padding: 100px 10%;
+    background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
+}
+
+.hero h1 {
+    font-size: 4rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    letter-spacing: -2px;
+}
+
+.highlight {
+    color: var(--primary-gold);
+}
+
+/* --- Buttons --- */
+.btn {
+    padding: 0.8rem 2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: 0.3s transform;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background-color: var(--primary-gold);
+    color: white;
+}
+
+.btn-secondary {
+    border: 1px solid #334155;
+    color: var(--text-main);
+    margin-left: 1rem;
+}
+
+/* --- Dashboard & Tables --- */
+.container {
+    max-width: 1000px;
+    margin: 50px auto;
+    padding: 0 20px;
+}
+
+.card {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid #334155;
+    margin-bottom: 2rem;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+th {
+    text-align: left;
+    color: var(--text-muted);
+    padding: 1rem;
+    border-bottom: 1px solid #334155;
+}
+
+td {
+    padding: 1rem;
+    border-bottom: 1px solid #1e293b;
+}
+
+/* --- Flash Messages --- */
+.alert {
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+.alert-success { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid var(--success); }
+.alert-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }

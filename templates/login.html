@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div style="max-width: 400px; margin: 50px auto; background-color: #1e2430; padding: 30px; border-radius: 8px;">
+<div style="max-width: 400px; margin: 50px auto; background-color: #206ba5; padding: 30px; border-radius: 8px;">
     <h2>Login to SRA</h2>
     <form method="POST" action="{{ url_for('login') }}">
         <div style="margin-bottom: 15px;">
@@ -12,8 +12,8 @@
             <label>Password</label><br>
             <input type="password" name="password" required style="width: 100%; padding: 10px; margin-top: 5px; border-radius: 4px; border: none;">
         </div>
-        <button type="submit" style="width: 100%; padding: 12px; background-color: #e89b2b; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Login</button>
+        <button type="submit" style="width: 100%; padding: 12px; background-color: #e89b2b; color: rgb(244, 244, 244); border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Login</button>
     </form>
-    <p style="text-align: center; margin-top: 15px;">Don't have an account? <a href="{{ url_for('register') }}" style="color: #e89b2b;">Sign up</a></p>
+    <p style="text-align: center; margin-top: 15px;">Don't have an account? <a href="{{ url_for('register') }}" style="color: #e8c52b;">Sign up</a></p>
 </div>
 {% endblock %}
